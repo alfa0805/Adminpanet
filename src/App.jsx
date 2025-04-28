@@ -8,8 +8,8 @@ function App() {
   useEffect(()=>{
     if(!gettoken){
       naviget("/")
-    }else{
-      naviget("/home")
+    }
+    else{
       naviget("/home/category")
       naviget("/home/discount")
       naviget("/home/sizes")
@@ -18,6 +18,7 @@ function App() {
       naviget("/home/contact")
       naviget("/home/team")
       naviget("/home/news")
+      naviget("/home")
     }
   },[])
   return (

@@ -7,7 +7,7 @@ function Sidebar() {
     "block px-4 py-2 text-white rounded-md transition-all duration-200";
 
   return (
-    <div className="fixed w-[220px] h-[100dvh] bg-gray-800 shadow-lg py-8 px-5">
+    <div className="fixed w-[220px] h-[100dvh] bg-gray-800 shadow-lg py-8 px-5 z-20">
       <div className="w-[100px] h-[80px] mx-auto">
         <img src={Logo} alt="" className="w-full h-full"/>
       </div>

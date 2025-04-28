@@ -67,6 +67,7 @@ function Login() {
           />
         </label>
         <button
+          disabled
           className={`${
             loading ? "bg-gray-400" : "bg-green-500"
           } mt-7 text-white text-lg font-semibold w-full h-[40px] rounded-md`}

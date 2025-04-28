@@ -8,13 +8,13 @@ function Home() {
         naviget("/")
     }
   return (
-    <>
+    <div className="bg-gray-100">
         <Sidebar/>
-        <div className="w-full flex justify-end pr-5 py-5">
+        <div className=" fixed w-full h-[80px] z-10 bg-gray-200 flex justify-end pr-5 py-5">
           <button onClick={Logoutbtn} className="py-1 px-5 cursor-pointer bg-red-500 rounded-lg text-white">Log Out</button>
         </div>
         <Outlet/>
-    </>
+    </div>
   )
 }
 
