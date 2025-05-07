@@ -361,5 +361,4 @@ function Discount() {
     </div>
   );
 }
-
 export default Discount;

@@ -129,7 +129,7 @@ function Category() {
 
         {/* Modal */}
         {addmodal && (
-          <div className="w-full h-full absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
+          <div className="w-full h-[100dvh] absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
             <form
               onSubmit={addcategory}
               className="relative w-[350px] h-[350px] shadow-lg shadow-[#1e1d1d5c] bg-gray-50 flex flex-col items-center justify-around gap-4 p-7 rounded-lg"
@@ -187,7 +187,7 @@ function Category() {
 
         {/* delete modall  */}
         {deletemodal && (
-          <div className="w-full h-full absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
+          <div className="w-full h-[100dvh] absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
             <div className=" w-[300px] h-[200px] flex flex-col bg-white rounded-md items-center justify-center gap-5">
               <p className="pb-5 text-red-500 text-shadow-lg text-xl text-center">
                 Haqiqatdan ham o'chirmoqchimisiz
@@ -220,50 +220,58 @@ function Category() {
             <Atom color="#ffa600" size="medium" text="" textColor="" />
           </div>
         ) : (
-          <table className="w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border px-4 py-2">№</th>
-                <th className="border px-4 py-2">Title ENG</th>
-                <th className="border px-4 py-2">Title RU</th>
-                <th className="border px-4 py-2">Title DE</th>
-                <th className="border px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-200 text-shadow-md">
-                  <td className="border px-4 py-2 text-center">{index + 1}</td>
-                  <td className="border px-4 py-2 text-center">
-                    {item.name_en}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {item.name_ru}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {item.name_de}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    <button
-                      onClick={() => editcategory(item)}
-                      className="px-3 py-1 bg-red-500 rounded-md text-white text-lg font-medium cursor-pointer shadow-md"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedId(item.id);
-                        setDeletemodal(true);
-                      }}
-                      className="px-3 py-1 ml-2 bg-amber-500 rounded-md text-white text-lg font-medium cursor-pointer shadow-md"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <div className="w-full max-h-[380px] overflow-y-auto"
+          style={{
+            scrollbarWidth: "none" /* Firefox */,
+            msOverflowStyle: "none" /* IE */,
+          }}>
+            <table className="w-full table-auto border-collapse">
+              <thead className="sticky top-0 bg-gray-100 z-10">
+                <tr className="bg-gray-100">
+                  <th className="border px-4 py-2">№</th>
+                  <th className="border px-4 py-2">Title ENG</th>
+                  <th className="border px-4 py-2">Title RU</th>
+                  <th className="border px-4 py-2">Title DE</th>
+                  <th className="border px-4 py-2">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="[&::-webkit-scrollbar]:hidden">
+                {data.map((item, index) => (
+                  <tr key={index} className="hover:bg-gray-200 text-shadow-md">
+                    <td className="border px-4 py-2 text-center">
+                      {index + 1}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {item.name_en}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {item.name_ru}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {item.name_de}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      <button
+                        onClick={() => editcategory(item)}
+                        className="px-3 py-1 bg-red-500 rounded-md text-white text-lg font-medium cursor-pointer shadow-md"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedId(item.id);
+                          setDeletemodal(true);
+                        }}
+                        className="px-3 py-1 ml-2 bg-amber-500 rounded-md text-white text-lg font-medium cursor-pointer shadow-md"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
