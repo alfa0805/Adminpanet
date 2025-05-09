@@ -133,7 +133,7 @@ function Team() {
 
         {/* add Team : malumot qoshish  */}
         {addmodal && (
-          <div className="w-full h-full absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
+          <div className="w-full h-[100dvh] absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
             <form
               onSubmit={addTeam}
               action=""
@@ -197,7 +197,7 @@ function Team() {
 
         {/* Edit Team : malumot yangilash  */}
         {editmodal && (
-          <div className="w-full h-full absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
+          <div className="w-full h-[100dvh] absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
             <form
               onSubmit={editTeam}
               action=""

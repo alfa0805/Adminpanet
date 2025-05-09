@@ -7,10 +7,10 @@ const Url = "https://back.ifly.com.uz/api/news";
 
 function News() {
   const token = localStorage.getItem("token");
-
+  const [modalOpen, setModalOpen] = useState(false);
+  
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [image, setImage] = useState(null);

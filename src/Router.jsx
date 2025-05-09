@@ -2,7 +2,6 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
-import Producs from "./Pages/Producs";
 import Category from "./Pages/Category";
 import Discount from "./Pages/Discount";
 import Sizes from "./Pages/Sizes";
@@ -11,6 +10,8 @@ import Faq from "./Pages/Faq";
 import Contact from "./Pages/Contact";
 import Team from "./Pages/Team";
 import News from "./Pages/News";
+import Products from "./Pages/Products";
+import Producs from "./Pages/Producs";
 
 
 export const Router = createBrowserRouter([
