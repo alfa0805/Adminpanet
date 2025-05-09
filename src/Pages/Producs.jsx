@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { toast } from "react-toastify";
 
 const Url = "https://back.ifly.com.uz/api/product";
 const CategoryUrl = "https://back.ifly.com.uz/api/category"; // Category URL
@@ -51,7 +52,7 @@ function Producs() {
       .then((res) => res.json())
       .then((response) => {
         console.log(response?.data?.products || []);
-        
+
         setData(response?.data?.products || []);
       })
       .catch((error) => {
@@ -198,6 +199,30 @@ function Producs() {
       });
   };
 
+  // delete Team : malumot ochirish
+  const [deletemodal, setDeletemodal] = useState(false);
+  const [deletid , setdeletid] = useState(false)
+  const deleteTeam = (e) => {
+    e.preventDefault;
+    fetch(`${Url}/${deletid}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((item) => {
+        if (item?.success) {
+          setDeletemodal(false);
+          toast.success(item?.data?.message || "O'chirildi");
+          getTeam();
+        } else {
+          toast.error(item?.message || "Kategoriya o'chirilmadi");
+        }
+      });
+  };
+
   return (
     <div className="pl-[250px] pr-5 pt-[100px] bg-gray-200 relative">
       <div className="w-full bg-white p-5 shadow-lg rounded-lg">
@@ -294,7 +319,13 @@ function Producs() {
                   >
                     Edit
                   </button>
-                  <button className="px-3 py-2 ml-2 bg-red-500 rounded-md text-white text-sm font-medium shadow-md">
+                  <button
+                    onClick={() => {
+                      setdeletid(product.id);
+                      setDeletemodal(true);
+                    }}
+                    className="px-3 py-2 ml-2 bg-red-500 rounded-md text-white text-sm font-medium shadow-md"
+                  >
                     Delete
                   </button>
                 </td>
@@ -498,6 +529,35 @@ function Producs() {
                 className="absolute top-2 right-2 text-xl cursor-pointer text-gray-600"
               />
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* delete modall  */}
+      {deletemodal && (
+        <div className="w-full h-[100dvh] absolute backdrop-blur-xs bg-[#04040455] z-30 top-0 left-0 flex items-center justify-center">
+          <div className="w-[300px] h-[200px] flex flex-col bg-white rounded-md items-center justify-center gap-5">
+            <p className="pb-5 text-red-500 text-shadow-lg text-xl text-center">
+              Haqiqatdan ham o'chirmoqchimisiz
+            </p>
+            <div className="flex items-center justify-center gap-5">
+              <button
+                onClick={() => {
+                  // deletecategory(item.id);
+                  setDeletemodal(false);
+                }}
+                className="px-3 py-1 ml-2 bg-amber-500 rounded-md text-white text-lg font-medium cursor-pointer shadow-md"
+              >
+                Close
+              </button>
+
+              <button
+                onClick={deleteTeam}
+                className="px-3 py-1 ml-2 bg-red-500 rounded-md text-white text-lg font-medium cursor-pointer shadow-md"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
