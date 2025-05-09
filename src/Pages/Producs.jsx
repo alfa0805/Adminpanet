@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { toast } from "react-toastify";
 
-const Url = "https://back.ifly.com.uz/api/product";
-const CategoryUrl = "https://back.ifly.com.uz/api/category"; // Category URL
-const sizesUrl = "https://back.ifly.com.uz/api/sizes";
-const colorsUrl = "https://back.ifly.com.uz/api/colors";
-const discountUrl = "https://back.ifly.com.uz/api/discount";
+const Url = "https://testaoron.limsa.uz/api/product";
+const CategoryUrl = "https://testaoron.limsa.uz/api/category";
+const sizesUrl = "https://testaoron.limsa.uz/api/sizes";
+const colorsUrl = "https://testaoron.limsa.uz/api/colors";
+const discountUrl = "https://testaoron.limsa.uz/api/discount";
 
 function Producs() {
   const token = localStorage.getItem("token");
@@ -35,9 +35,9 @@ function Producs() {
   const [materials, setMaterials] = useState("");
   const [categoryId, setCategoryId] = useState({});
   const [image, setImage] = useState([]);
-  const [sizes, setSizes] = useState("");
-  const [colors, setColors] = useState("");
-  const [discount, setDiscount] = useState("");
+  const [sizes, setSizes] = useState({});
+  const [colors, setColors] = useState({});
+  const [discount, setDiscount] = useState({});
 
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -45,14 +45,13 @@ function Producs() {
 
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedDiscount, setSelectedDiscount] = useState([]);
 
   // Fetch products and categories
   useEffect(() => {
     fetch(Url)
       .then((res) => res.json())
       .then((response) => {
-        console.log(response?.data?.products || []);
-
         setData(response?.data?.products || []);
       })
       .catch((error) => {
@@ -93,11 +92,11 @@ function Producs() {
     fetch(discountUrl)
       .then((res) => res.json())
       .then((response) => {
-        setColors(response?.data || []);
+        setDiscount(response?.data || {});
       })
       .catch((error) => {
         console.error("Error fetching colors:", error);
-        setColors([]);
+        setDiscount([]);
       });
 
     setLoading(false);
@@ -108,7 +107,7 @@ function Producs() {
     e.preventDefault();
 
     const formData = new FormData();
-    if (image) formData.append("file", image);
+    if (image) formData.append("files", image);
     formData.append("title_en", titleen);
     formData.append("title_ru", titleru);
     formData.append("title_de", titlede);
@@ -116,11 +115,12 @@ function Producs() {
     formData.append("description_ru", descru);
     formData.append("description_de", descde);
     formData.append("price", price);
+    formData.append("min_sell", min_sell);
     formData.append("category_id", categoryId);
-    formData.append("sizes", selectedSizes);
-    formData.append("colors", selectedColors);
-    formData.append("discount_id", discount);
-    formData.append("materials", materials);
+    formData.append("sizes_id[]", selectedSizes);
+    formData.append("colors_id[]", selectedColors);
+    formData.append("discount_id{}", selectedDiscount);
+    // formData.append("materials", materials);
 
     const method = isEditing ? "PATCH" : "POST";
     const endpoint = isEditing ? `${Url}/${selectedId}` : Url;
@@ -201,7 +201,7 @@ function Producs() {
 
   // delete Team : malumot ochirish
   const [deletemodal, setDeletemodal] = useState(false);
-  const [deletid , setdeletid] = useState(false)
+  const [deletid, setdeletid] = useState(false);
   const deleteTeam = (e) => {
     e.preventDefault;
     fetch(`${Url}/${deletid}`, {
@@ -216,7 +216,7 @@ function Producs() {
         if (item?.success) {
           setDeletemodal(false);
           toast.success(item?.data?.message || "O'chirildi");
-          getTeam();
+          fetchProducts()
         } else {
           toast.error(item?.message || "Kategoriya o'chirilmadi");
         }
@@ -262,7 +262,7 @@ function Producs() {
                   {Array.isArray(product.images) &&
                   product.images.length > 0 ? (
                     <img
-                      src={`https://back.ifly.com.uz/${product.images[0]}`}
+                      src={`https://testaoron.limsa.uz/${product.images[0]}`}
                       alt="Product"
                       className="w-16 h-16 object-cover mx-auto rounded"
                     />
@@ -289,7 +289,7 @@ function Producs() {
 
                 <td className="border px-4 py-2 text-center">
                   {Array.isArray(product.colors)
-                    ? product.colors.map((c) => c.name || c).join(", ")
+                    ? product.colors.map((c) => c.color_en || c).join(", ")
                     : "No Colors"}
                 </td>
 
@@ -409,6 +409,16 @@ function Producs() {
                 className="border p-2 rounded"
                 required
               />
+
+              <input
+                type="number"
+                value={min_sell}
+                onChange={(e) => setMin_sell(e.target.value)}
+                placeholder="Price"
+                className="border p-2 rounded"
+                required
+              />
+
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
@@ -431,7 +441,7 @@ function Producs() {
                 <label className="font-bold">Select Sizes:</label>
                 {sizes.length > 0 ? (
                   sizes.map((size) => (
-                    <label key={size.id} className="flex items-center gap-2">
+                    <label key={size.size} className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         value={size.id}
@@ -454,7 +464,7 @@ function Producs() {
                 )}
               </div>
 
-              {/* <div>
+              <div>
                 <label className="font-semibold">Select Colors:</label>
                 <div className="flex gap-4 flex-wrap mt-2">
                   {colors.map((color) => (
@@ -485,22 +495,40 @@ function Producs() {
                     </label>
                   ))}
                 </div>
-              </div> */}
+              </div>
 
-              <input
-                type="text"
-                value={discount}
-                onChange={(e) => setDiscount(e.target.value)}
-                placeholder="Discount"
-                className="border p-2 rounded"
-              />
-              <input
+              <div className="flex flex-col gap-2">
+                <label className="font-bold">Select Discounts:</label>
+                <select
+                  multiple
+                  className="w-full p-2 border border-gray-300 rounded"
+                  value={selectedDiscount}
+                  onChange={(e) => {
+                    const selectedOptions = Array.from(
+                      e.target.selectedOptions
+                    ).map((opt) => Number(opt.value));
+                    setSelectedDiscount(selectedOptions);
+                  }}
+                >
+                  {discount.length > 0 ? (
+                    discount.map((disc) => (
+                      <option key={disc.id} value={disc.id}>
+                        {disc.discount}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>No discounts available</option>
+                  )}
+                </select>
+              </div>
+
+              {/* <input
                 type="text"
                 value={materials}
                 onChange={(e) => setMaterials(e.target.value)}
                 placeholder="Materials"
                 className="border p-2 rounded"
-              />
+              /> */}
 
               <div className="flex justify-end gap-2 mt-4">
                 <button

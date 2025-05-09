@@ -3,7 +3,7 @@ import { AiOutlineCloseCircle } from "react-icons/ai";
 import { Atom } from "react-loading-indicators";
 import { toast } from "react-toastify";
 
-const Url = "https://back.ifly.com.uz/api/sizes";
+const Url = "https://testaoron.limsa.uz/api/sizes";
 
 function Sizes() {
   const token = localStorage.getItem("token");

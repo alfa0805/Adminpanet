@@ -12,7 +12,7 @@ function Login() {
     console.log(login, password);
     setloading(true);
 
-    fetch("https://back.ifly.com.uz/api/auth/login", {
+    fetch("https://testaoron.limsa.uz/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
