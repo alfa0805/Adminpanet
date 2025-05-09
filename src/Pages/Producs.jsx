@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { Atom } from "react-loading-indicators";
 import { toast } from "react-toastify";
 
 const Url = "https://testaoron.limsa.uz/api/product";
@@ -32,16 +33,17 @@ function Producs() {
   const [price, setPrice] = useState("");
   const [min_sell, setMin_sell] = useState("");
 
-  const [materials, setMaterials] = useState("");
   const [categoryId, setCategoryId] = useState({});
   const [image, setImage] = useState([]);
-  const [sizes, setSizes] = useState({});
-  const [colors, setColors] = useState({});
+  const [sizes, setSizes] = useState([]);
+  const [colors, setColors] = useState("");
   const [discount, setDiscount] = useState({});
 
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+
+  const [materials, setMaterials] = useState([{ name: "", value: "" }]);
 
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -102,6 +104,22 @@ function Producs() {
     setLoading(false);
   }, []);
 
+  const handleMaterialChange = (index, event) => {
+    const values = [...materials];
+    values[index][event.target.name] = event.target.value;
+    setMaterials(values);
+  };
+
+  const handleAddMaterial = () => {
+    setMaterials([...materials, { name: "", value: "" }]);
+  };
+
+  const handleRemoveMaterial = (index) => {
+    const values = [...materials];
+    values.splice(index, 1);
+    setMaterials(values);
+  };
+
   // Handle form submit (Add/Edit)
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -117,10 +135,30 @@ function Producs() {
     formData.append("price", price);
     formData.append("min_sell", min_sell);
     formData.append("category_id", categoryId);
-    formData.append("sizes_id[]", selectedSizes);
-    formData.append("colors_id[]", selectedColors);
+
+    selectedSizes.forEach((sizeId) => {
+      formData.append("sizes_id[]", sizeId);
+    });
+
+    selectedColors.forEach((colorId) => {
+      formData.append("colors_id[]", colorId);
+    });
+
     formData.append("discount_id{}", selectedDiscount);
-    // formData.append("materials", materials);
+
+    // materials.forEach((material, index) => {
+    //   formData.append(`materials[${index}][name]`, material.name);
+    //   formData.append(`materials[${index}][value]`, material.value);
+    // });
+
+    const materialsObject = materials.reduce((acc, item) => {
+      if (item.name && item.value) {
+        acc[item.name] = item.value;
+      }
+      return acc;
+    }, {});
+    formData.append("materials", JSON.stringify(materialsObject));
+    // formData.append("discount_id", selectedDiscount || null);
 
     const method = isEditing ? "PATCH" : "POST";
     const endpoint = isEditing ? `${Url}/${selectedId}` : Url;
@@ -135,12 +173,12 @@ function Producs() {
       .then((res) => res.json())
       .then((res) => {
         if (res.success) {
-          alert(isEditing ? "Product Updated!" : "Product Added!");
+          toast.success("Muvaffaqqiyatli");
           setModalOpen(false);
           resetForm();
           fetchProducts();
         } else {
-          alert(res.message?.error || "Error occurred!");
+          toast.error(res.message?.error || "Error occurred!");
         }
       })
       .catch((error) => {
@@ -158,9 +196,8 @@ function Producs() {
     setDescde("");
     setPrice("");
     setCategoryId("");
-    setImage(null);
-    setSizes("");
-    setColors("");
+    setSizes([]);
+    setColors([]);
     setDiscount("");
     setMaterials("");
     setIsEditing(false);
@@ -180,9 +217,23 @@ function Producs() {
     setPrice(product.price);
     setCategoryId(product.category_id);
     setSizes(product.sizes);
-    setColors(product.colors);
+    setSelectedSizes(product.sizes.map((s) => s.id));
+
     setDiscount(product.discount);
     setMaterials(product.materials);
+    setModalOpen(true);
+
+    setColors(product.colors); // bu umumiy ro‘yxat
+    setSelectedColors(product.colors.map((c) => c.id));
+    // ✅ materials ni array qilib o‘zgartirish
+    const materialsArray = product.materials
+      ? Object.entries(product.materials).map(([name, value]) => ({
+          name,
+          value,
+        }))
+      : [];
+
+    setMaterials(materialsArray); // to‘g‘ri formatda set qilindi
     setModalOpen(true);
   };
 
@@ -216,7 +267,7 @@ function Producs() {
         if (item?.success) {
           setDeletemodal(false);
           toast.success(item?.data?.message || "O'chirildi");
-          fetchProducts()
+          fetchProducts();
         } else {
           toast.error(item?.message || "Kategoriya o'chirilmadi");
         }
@@ -237,102 +288,108 @@ function Producs() {
         </div>
 
         {/* Table */}
-        <table className="w-full table-auto border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border px-4 py-2">№</th>
-              <th className="border px-4 py-2">Images</th>
-              <th className="border px-4 py-2">Title</th>
-              <th className="border px-4 py-2">Description</th>
-              <th className="border px-4 py-2">Price</th>
-              <th className="border px-4 py-2">Category</th>
-              <th className="border px-4 py-2">Colors</th>
-              <th className="border px-4 py-2">Sizes</th>
-              <th className="border px-4 py-2">Discount</th>
-              <th className="border px-4 py-2">Materials</th>
-              <th className="border px-4 py-2 w-[200px]">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((product, index) => (
-              <tr key={index} className="hover:bg-gray-200 text-shadow-md">
-                <td className="border px-4 py-2 text-center">{index + 1}</td>
-
-                <td className="border px-4 py-2 text-center">
-                  {Array.isArray(product.images) &&
-                  product.images.length > 0 ? (
-                    <img
-                      src={`https://testaoron.limsa.uz/${product.images[0]}`}
-                      alt="Product"
-                      className="w-16 h-16 object-cover mx-auto rounded"
-                    />
-                  ) : (
-                    "No Image"
-                  )}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {product.title_en || product.name_en || "No Title"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {product.description_en || "No Description"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {product.price || "0"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {product.category?.name_en || "No Category"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {Array.isArray(product.colors)
-                    ? product.colors.map((c) => c.color_en || c).join(", ")
-                    : "No Colors"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {Array.isArray(product.sizes)
-                    ? product.sizes.map((s) => s.size || s).join(", ")
-                    : product.sizes?.size || "No Size"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {product.discount?.discount || "0%"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  {Array.isArray(product.materials)
-                    ? product.materials.join(", ")
-                    : typeof product.materials === "object" &&
-                      product.materials !== null
-                    ? Object.values(product.materials).join(", ")
-                    : product.materials || "No Materials"}
-                </td>
-
-                <td className="border px-4 py-2 text-center">
-                  <button
-                    onClick={() => openEditModal(product)}
-                    className="px-3 py-2 bg-amber-500 rounded-md text-white text-sm font-medium shadow-md"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => {
-                      setdeletid(product.id);
-                      setDeletemodal(true);
-                    }}
-                    className="px-3 py-2 ml-2 bg-red-500 rounded-md text-white text-sm font-medium shadow-md"
-                  >
-                    Delete
-                  </button>
-                </td>
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Atom color="#ffa600" size="medium" text="" textColor="" />
+          </div>
+        ) : (
+          <table className="w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-4 py-2">№</th>
+                <th className="border px-4 py-2">Images</th>
+                <th className="border px-4 py-2">Title</th>
+                <th className="border px-4 py-2">Description</th>
+                <th className="border px-4 py-2">Price</th>
+                <th className="border px-4 py-2">Category</th>
+                <th className="border px-4 py-2">Colors</th>
+                <th className="border px-4 py-2">Sizes</th>
+                <th className="border px-4 py-2">Discount</th>
+                <th className="border px-4 py-2">Materials</th>
+                <th className="border px-4 py-2 w-[200px]">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((product, index) => (
+                <tr key={index} className="hover:bg-gray-200 text-shadow-md">
+                  <td className="border px-4 py-2 text-center">{index + 1}</td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {Array.isArray(product.images) &&
+                    product.images.length > 0 ? (
+                      <img
+                        src={`https://testaoron.limsa.uz/${product.images[0]}`}
+                        alt="Product"
+                        className="w-16 h-16 object-cover mx-auto rounded"
+                      />
+                    ) : (
+                      "No Image"
+                    )}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {product.title_en || product.name_en || "No Title"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {product.description_en || "No Description"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {product.price || "0"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {product.category?.name_en || "No Category"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {Array.isArray(product.colors)
+                      ? product.colors.map((c) => c.color_en || c).join(", ")
+                      : "No Colors"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {Array.isArray(product.sizes)
+                      ? product.sizes.map((s) => s.size || s).join(", ")
+                      : product.sizes?.size || "No Size"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {product.discount?.discount || "0%"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    {Array.isArray(product.materials)
+                      ? product.materials.join(", ")
+                      : typeof product.materials === "object" &&
+                        product.materials !== null
+                      ? Object.values(product.materials).join(", ")
+                      : product.materials || "No Materials"}
+                  </td>
+
+                  <td className="border px-4 py-2 text-center">
+                    <button
+                      onClick={() => openEditModal(product)}
+                      className="px-3 py-2 bg-amber-500 rounded-md text-white text-sm font-medium shadow-md"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        setdeletid(product.id);
+                        setDeletemodal(true);
+                      }}
+                      className="px-3 py-2 ml-2 bg-red-500 rounded-md text-white text-sm font-medium shadow-md"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Modal */}
@@ -414,7 +471,7 @@ function Producs() {
                 type="number"
                 value={min_sell}
                 onChange={(e) => setMin_sell(e.target.value)}
-                placeholder="Price"
+                placeholder="Min_sell"
                 className="border p-2 rounded"
                 required
               />
@@ -487,11 +544,7 @@ function Producs() {
                           }
                         }}
                       />
-                      <span>
-                        <strong>EN:</strong> {color.color_en} <br />
-                        <strong>RU:</strong> {color.color_ru} <br />
-                        <strong>DE:</strong> {color.color_de}
-                      </span>
+                      <span>{color.color_en}</span>
                     </label>
                   ))}
                 </div>
@@ -502,7 +555,7 @@ function Producs() {
                 <select
                   multiple
                   className="w-full p-2 border border-gray-300 rounded"
-                  value={selectedDiscount}
+                  value={selectedDiscount.id}
                   onChange={(e) => {
                     const selectedOptions = Array.from(
                       e.target.selectedOptions
@@ -522,13 +575,40 @@ function Producs() {
                 </select>
               </div>
 
-              {/* <input
-                type="text"
-                value={materials}
-                onChange={(e) => setMaterials(e.target.value)}
-                placeholder="Materials"
-                className="border p-2 rounded"
-              /> */}
+              <h3>Materials:</h3>
+              {materials.map((material, index) => (
+                <div key={index}>
+                  <input
+                    type="text"
+                    name="name"
+                    value={material.name}
+                    onChange={(e) => handleMaterialChange(index, e)}
+                    placeholder="Material Name"
+                    className="border p-2 rounded"
+                  />
+                  <input
+                    type="text"
+                    name="value"
+                    value={material.value}
+                    onChange={(e) => handleMaterialChange(index, e)}
+                    placeholder="Material Value"
+                    className="border p-2 rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMaterial(index)}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+              <button type="button" onClick={handleAddMaterial}>
+                Add Material
+              </button>
+
+              {/* <button type="submit">
+                {isEditing ? "Edit Product" : "Add Product"}
+              </button> */}
 
               <div className="flex justify-end gap-2 mt-4">
                 <button
@@ -554,7 +634,7 @@ function Producs() {
                   setModalOpen(false);
                   resetForm();
                 }}
-                className="absolute top-2 right-2 text-xl cursor-pointer text-gray-600"
+                className="absolute top-2 right-2 text-3xl cursor-pointer text-red-600"
               />
             </form>
           </div>
