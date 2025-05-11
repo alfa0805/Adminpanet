@@ -324,7 +324,7 @@ function Team() {
                     <td className="border px-4 py-2 flex flex-col items-center">
                       <div className="w-[120px] h-[70px]">
                         <img
-                          src={`https://back.ifly.com.uz/${item.image}`}
+                          src={`https://testaoron.limsa.uz${item.image}`}
                           alt={item.full_name}
                           className="w-full h-full object-contain"
                         />

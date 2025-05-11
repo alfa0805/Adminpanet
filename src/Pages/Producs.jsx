@@ -293,102 +293,112 @@ function Producs() {
             <Atom color="#ffa600" size="medium" text="" textColor="" />
           </div>
         ) : (
-          <table className="w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border px-4 py-2">№</th>
-                <th className="border px-4 py-2">Images</th>
-                <th className="border px-4 py-2">Title</th>
-                <th className="border px-4 py-2">Description</th>
-                <th className="border px-4 py-2">Price</th>
-                <th className="border px-4 py-2">Category</th>
-                <th className="border px-4 py-2">Colors</th>
-                <th className="border px-4 py-2">Sizes</th>
-                <th className="border px-4 py-2">Discount</th>
-                <th className="border px-4 py-2">Materials</th>
-                <th className="border px-4 py-2 w-[200px]">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((product, index) => (
-                <tr key={index} className="hover:bg-gray-200 text-shadow-md">
-                  <td className="border px-4 py-2 text-center">{index + 1}</td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {Array.isArray(product.images) &&
-                    product.images.length > 0 ? (
-                      <img
-                        src={`https://testaoron.limsa.uz/${product.images[0]}`}
-                        alt="Product"
-                        className="w-16 h-16 object-cover mx-auto rounded"
-                      />
-                    ) : (
-                      "No Image"
-                    )}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {product.title_en || product.name_en || "No Title"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {product.description_en || "No Description"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {product.price || "0"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {product.category?.name_en || "No Category"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {Array.isArray(product.colors)
-                      ? product.colors.map((c) => c.color_en || c).join(", ")
-                      : "No Colors"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {Array.isArray(product.sizes)
-                      ? product.sizes.map((s) => s.size || s).join(", ")
-                      : product.sizes?.size || "No Size"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {product.discount?.discount || "0%"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    {Array.isArray(product.materials)
-                      ? product.materials.join(", ")
-                      : typeof product.materials === "object" &&
-                        product.materials !== null
-                      ? Object.values(product.materials).join(", ")
-                      : product.materials || "No Materials"}
-                  </td>
-
-                  <td className="border px-4 py-2 text-center">
-                    <button
-                      onClick={() => openEditModal(product)}
-                      className="px-3 py-2 bg-amber-500 rounded-md text-white text-sm font-medium shadow-md"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        setdeletid(product.id);
-                        setDeletemodal(true);
-                      }}
-                      className="px-3 py-2 ml-2 bg-red-500 rounded-md text-white text-sm font-medium shadow-md"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <div
+            className="w-full max-h-[420px] overflow-y-auto"
+            style={{
+              scrollbarWidth: "none" /* Firefox */,
+              msOverflowStyle: "none" /* IE */,
+            }}
+          >
+            <table className="w-full table-auto border-collapse">
+              <thead className="sticky top-0 bg-gray-100 z-10">
+                <tr className="bg-gray-100">
+                  <th className="border px-4 py-2">№</th>
+                  <th className="border px-4 py-2">Images</th>
+                  <th className="border px-4 py-2">Title</th>
+                  <th className="border px-4 py-2">Description</th>
+                  <th className="border px-4 py-2">Price</th>
+                  <th className="border px-4 py-2">Category</th>
+                  <th className="border px-4 py-2">Colors</th>
+                  <th className="border px-4 py-2">Sizes</th>
+                  <th className="border px-4 py-2">Discount</th>
+                  <th className="border px-4 py-2">Materials</th>
+                  <th className="border px-4 py-2 w-[200px]">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="[&::-webkit-scrollbar]:hidden">
+                {data.map((product, index) => (
+                  <tr key={index} className="hover:bg-gray-200  text-shadow-md">
+                    <td className="border px-4 py-2 text-center">
+                      {index + 1}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {Array.isArray(product.images) &&
+                      product.images.length > 0 ? (
+                        <img
+                          src={`https://testaoron.limsa.uz/${product.images[0]}`}
+                          alt="Product"
+                          className="w-16 h-16 object-cover mx-auto rounded"
+                        />
+                      ) : (
+                        "No Image"
+                      )}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {product.title_en || product.name_en || "No Title"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {product.description_en || "No Description"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {product.price || "0"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {product.category?.name_en || "No Category"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {Array.isArray(product.colors)
+                        ? product.colors.map((c) => c.color_en || c).join(", ")
+                        : "No Colors"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {Array.isArray(product.sizes)
+                        ? product.sizes.map((s) => s.size || s).join(", ")
+                        : product.sizes?.size || "No Size"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {product.discount?.discount || "0%"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      {Array.isArray(product.materials)
+                        ? product.materials.join(", ")
+                        : typeof product.materials === "object" &&
+                          product.materials !== null
+                        ? Object.values(product.materials).join(", ")
+                        : product.materials || "No Materials"}
+                    </td>
+
+                    <td className="border px-4 py-2 text-center">
+                      <button
+                        onClick={() => openEditModal(product)}
+                        className="px-3 py-2 bg-amber-500 rounded-md text-white text-sm font-medium shadow-md"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          setdeletid(product.id);
+                          setDeletemodal(true);
+                        }}
+                        className="px-3 py-2 ml-2 bg-red-500 rounded-md text-white text-sm font-medium shadow-md"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

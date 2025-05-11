@@ -10,7 +10,6 @@ import Faq from "./Pages/Faq";
 import Contact from "./Pages/Contact";
 import Team from "./Pages/Team";
 import News from "./Pages/News";
-import Products from "./Pages/Products";
 import Producs from "./Pages/Producs";
 
 

@@ -193,7 +193,7 @@ function News() {
                     <td className="border p-2 text-center">{index + 1}</td>
                     <td className="border p-2 text-center">
                       <img
-                        src={`https://back.ifly.com.uz/${item.image}`}
+                        src={`https://testaoron.limsa.uz${item.image}`}
                         alt="img"
                         className="w-28 h-16 object-cover mx-auto"
                       />
